@@ -1,1 +1,1 @@
-Simple blog app built with NodeJS, ExpressJS, MongoDB, PassportJS.
+Simple blog app built with NodeJS, ExpressJS, MongoDB, PassportJS and Bootstrap.
