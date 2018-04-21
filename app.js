@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 
 mongoose.connect('mongodb://localhost/TodoApp');
 let db = mongoose.connection;
@@ -27,14 +27,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // Body Parser Middleware
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 // Set Public Folder
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 // Home route
 app.get('/', (req, res) => {
@@ -51,12 +50,13 @@ app.get('/', (req, res) => {
 });
 
 // Get single Article
-app.get('/article/:id', (req,res) => {
-  Article.findById(req.params.id, (err,article)=> {
-    console.log(article);
-    return;
+app.get('/article/:id', (req, res) => {
+  Article.findById(req.params.id, (err, article) => {
+    res.render('article', {
+      article: article
+    });
   });
-})
+});
 
 // Add route
 app.get('/articles/add', (req, res) => {
@@ -72,12 +72,40 @@ app.post('/articles/add', (req, res) => {
   article.author = req.body.author;
   article.body = req.body.body;
 
-  article.save((err) => {
-    if(err){
+  article.save(err => {
+    if (err) {
       console.log(err);
       return;
-    }else {
-      res.redirect('/')
+    } else {
+      res.redirect('/');
+    }
+  });
+});
+
+// Load edit Form
+app.get('/article/edit/:id', (req, res) => {
+  Article.findById(req.params.id, (err, article) => {
+    res.render('edit_article', {
+      title: 'Edit Article',
+      article: article
+    });
+  });
+});
+
+// Update Submit POST route
+app.post('/articles/edit/:id', (req, res) => {
+  let article = {}
+  article.title = req.body.title;
+  article.author = req.body.author;
+  article.body = req.body.body;
+  let query = {_id:req.params.id}
+
+  Article.update(query, article, (err) => {
+    if (err) {
+      console.log(err);
+      return;
+    } else {
+      res.redirect('/');
     }
   });
 });
