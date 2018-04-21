@@ -1,8 +1,25 @@
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/TodoApp');
+let db = mongoose.connection;
+
+// check connection
+db.once('open', () => {
+  console.log('Connnected to mongoDB');
+});
+
+// Check for db errors
+db.on('error', err => {
+  console.log(err);
+});
 
 // Init App
 const app = express();
+
+// Bring in Models
+let Article = require('./models/article');
 
 // Load View Enginer
 app.set('views', path.join(__dirname, 'views'));
@@ -10,30 +27,15 @@ app.set('view engine', 'pug');
 
 // Home route
 app.get('/', (req, res) => {
-  let articles = [
-    {
-      id:1,
-      title:'Article One',
-      author: 'Batuhan Sahan',
-      body: 'This is article one'
-    },
-    {
-      id:2,
-      title:'Article Two',
-      author: 'Batuhan Sahan',
-      body: 'This is article two'
-    },
-    {
-      id:3,
-      title:'Article Three',
-      author: 'Batuhan Sahan',
-      body: 'This is article three'
-    },
-
-  ]
-  res.render('index', {
-    title: 'Articles',
-    articles: articles
+  Article.find({}, (err, articles)=> {
+    if(err) {
+      console.log(err);
+    }else {
+      res.render('index', {
+        title: 'Articles',
+        articles: articles
+      });
+    }
   });
 });
 
@@ -41,8 +43,8 @@ app.get('/', (req, res) => {
 app.get('/articles/add', (req, res) => {
   res.render('add_article', {
     title: 'Add article'
-  })
-})
+  });
+});
 
 // Start server
 app.listen(3000, () => {
