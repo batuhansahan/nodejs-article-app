@@ -72,7 +72,9 @@ app.get('/', (req, res) => {
 
 // Route files
 let articles = require('./routes/articles');
+let users = require('./routes/users');
 app.use('/articles', articles);
+app.use('/users', users);
 
 // Start server
 app.listen(3000, () => {
